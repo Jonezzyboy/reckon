@@ -264,14 +264,54 @@ if (typeof document !== 'undefined') (function () {
       revised: state.revised,
     };
     const earned = loadBadges();
-    let changed = false;
+    const fresh = [];
     for (const b of BADGES) {
       if (!(b.id in earned) && b.test(ctx)) {
         earned[b.id] = day;
-        changed = true;
+        fresh.push(b);
       }
     }
-    if (changed) localStorage.setItem(BADGES_KEY, JSON.stringify(earned));
+    if (fresh.length) {
+      localStorage.setItem(BADGES_KEY, JSON.stringify(earned));
+      fresh.forEach(queueToast);
+    }
+  }
+
+  /* ---------- toasts ---------- */
+
+  const toastQueue = [];
+  let toastShowing = false;
+
+  function queueToast(badge) {
+    toastQueue.push(badge);
+    if (!toastShowing) nextToast();
+  }
+
+  function nextToast() {
+    const b = toastQueue.shift();
+    if (!b) { toastShowing = false; return; }
+    toastShowing = true;
+    const el = document.createElement('div');
+    el.className = 'toast';
+    const seal = document.createElement('span');
+    seal.className = 'seal';
+    seal.textContent = b.seal;
+    const text = document.createElement('span');
+    text.className = 'toast-text';
+    const eyebrow = document.createElement('span');
+    eyebrow.className = 'toast-eyebrow';
+    eyebrow.textContent = 'Commendation earned';
+    const name = document.createElement('span');
+    name.className = 'toast-name';
+    name.textContent = b.name;
+    text.append(eyebrow, name);
+    el.append(seal, text);
+    $('#toasts').appendChild(el);
+    requestAnimationFrame(() => el.classList.add('show'));
+    setTimeout(() => {
+      el.classList.remove('show');
+      setTimeout(() => { el.remove(); nextToast(); }, 300);
+    }, 3800);
   }
 
   /* ---------- moves ---------- */

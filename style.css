@@ -730,7 +730,8 @@ button {
   box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.45);
 }
 
-.badge .seal {
+.badge .seal,
+.toast .seal {
   flex: none;
   display: grid;
   place-items: center;
@@ -781,6 +782,55 @@ button {
 @keyframes seal-in {
   from { transform: rotate(-6deg) scale(1.9); opacity: 0; }
   to   { transform: rotate(-6deg) scale(1); opacity: 0.9; }
+}
+
+/* ---------- toasts ---------- */
+
+.toasts {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(340px, calc(100vw - 32px));
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 3px;
+  padding: 10px 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25), 0 16px 32px -12px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 220ms ease, transform 260ms cubic-bezier(0.2, 1.2, 0.4, 1);
+}
+
+.toast.show { opacity: 1; transform: none; }
+
+.toast-text { display: grid; gap: 1px; }
+
+.toast-eyebrow {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--soft);
+}
+
+.toast-name {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.2;
 }
 
 /* ---------- ticker ---------- */
