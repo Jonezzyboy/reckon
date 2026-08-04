@@ -1,0 +1,13 @@
+{
+  "name": "reckon",
+  "version": "1.0.0",
+  "description": "Six numbers, four operations, one total to settle. A new account to reckon every day.",
+  "private": true,
+  "scripts": {
+    "start": "serve -l 8000 .",
+    "test": "node test/generator.test.js"
+  },
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}

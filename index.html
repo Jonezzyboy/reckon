@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reckon — the daily numbers ledger</title>
+<meta name="description" content="Six numbers, four operations, one total to settle. A new account to reckon every day.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧾</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Spline+Sans+Mono:wght@500;700&family=Spline+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="masthead">
+  <h1 class="wordmark">Reckon<span class="stop">.</span></h1>
+  <p class="meta"><span id="issue">No. —</span> · <span id="date"></span></p>
+  <p class="tagline">Six numbers. Four operations. One total to settle.</p>
+  <details class="rules">
+    <summary>How to play</summary>
+    <p>Combine the six figures with +, −, × and ÷ to hit the amount due exactly.
+    Pick a number, an operation, then a second number — the result is pencilled
+    in as a new figure you can spend. Each figure may be spent once.
+    Subtraction must stay positive and division must come out even: this ledger
+    holds only positive whole numbers. A fresh account opens at midnight.</p>
+  </details>
+</header>
+
+<main class="sheet" id="sheet">
+  <section class="due">
+    <span class="due-label">Amount due</span>
+    <span class="due-value" id="target">—</span>
+  </section>
+
+  <section class="tiles" id="tiles" aria-label="Available figures"></section>
+
+  <section class="ops" aria-label="Operations">
+    <button class="op" data-op="+" aria-label="Add">+</button>
+    <button class="op" data-op="-" aria-label="Subtract">−</button>
+    <button class="op" data-op="*" aria-label="Multiply">×</button>
+    <button class="op" data-op="/" aria-label="Divide">÷</button>
+  </section>
+
+  <p class="note" id="note" role="status"></p>
+
+  <section class="ledger" aria-label="Your working">
+    <ol id="lines"></ol>
+  </section>
+
+  <div class="controls">
+    <button id="undo" class="ghost">Undo</button>
+    <button id="clear" class="ghost">Start over</button>
+    <button id="giveup" class="ghost danger">Give up</button>
+  </div>
+
+  <div class="stamp" id="stamp" hidden aria-hidden="true">Settled</div>
+</main>
+
+<section class="result" id="result" hidden>
+  <p id="resultText"></p>
+  <button id="share" hidden>Copy result</button>
+</section>
+
+<footer class="ticker">
+  <span id="stats"></span>
+  <span id="next"></span>
+</footer>
+
+<script src="game.js"></script>
+</body>
+</html>
