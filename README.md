@@ -5,8 +5,8 @@ operations, one amount due — settle the account exactly and earn the red
 **SETTLED** stamp.
 
 **Play it at <https://jonezzyboy.github.io/reckon/>.**
-<https://jonezzyboy.github.io/> redirects there — the apex repo exists only to
-host the AdSense `ads.txt`, which must live at the domain root.
+It's listed alongside everything else on the homepage,
+<https://jonezzyboy.github.io/>.
 
 ## How to play
 
