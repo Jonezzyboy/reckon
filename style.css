@@ -403,6 +403,53 @@ button {
 
 .result button:active { transform: translateY(2px); box-shadow: none; }
 
+.history {
+  width: min(560px, 100%);
+  margin-top: 24px;
+  text-align: center;
+}
+
+.history summary {
+  cursor: pointer;
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  border-bottom: 1px dashed var(--ink-soft);
+}
+
+.history summary:hover { color: var(--ink); border-bottom-color: var(--ink); }
+
+.history ol {
+  list-style: none;
+  margin-top: 12px;
+  text-align: left;
+}
+
+.history li {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: 14px;
+  padding: 6px 0 4px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.history .leader {
+  flex: 1;
+  border-bottom: 1px dotted var(--ink-soft);
+  opacity: 0.6;
+  transform: translateY(-4px);
+}
+
+.history .amt { font-weight: 700; }
+
+.history li.settled .amt { color: var(--green); }
+
+.history li.open .amt { color: var(--ink-soft); font-weight: 500; }
+
 .ticker {
   width: min(560px, 100%);
   display: flex;

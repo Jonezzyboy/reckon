@@ -17,6 +17,9 @@ It's listed alongside everything else on the homepage,
   must come out even — the ledger holds only positive whole numbers.
 - A fresh account opens at local midnight. Streaks and results are kept in
   `localStorage`.
+- **Past accounts** (below the sheet) lists each previous day's result — the
+  puzzle number, its date, and whether the account was settled and in how many
+  lines.
 
 ## The daily puzzle
 
