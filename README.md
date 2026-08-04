@@ -27,6 +27,9 @@ House rules:
 - **Stationery** (in the footer) picks the look: *Counting house* (default),
   *Sage ledger*, *Manila*, *Banker's blue*, *Oxblood* and *Nightwatch* (dark).
   The choice is remembered.
+- **The books** (below the sheet) totals your record — settle rate, current
+  and best runs, late settles, and a distribution of how many lines your
+  settlements take.
 - **Past accounts** (below the sheet) lists every previous day — the puzzle
   number, its date, and whether the account was settled and in how many lines.
   Each entry links to that day's puzzle (also reachable at `?no=N`), reopened
@@ -38,7 +41,9 @@ House rules:
 Badges earned by settling accounts in style — spend all six figures
 (*Every Penny*), use all four operations (*Compound Entry*), settle with no
 undo (*Fair Copy*), finish in three lines (*Prompt Payment*), or keep a streak
-going (*Repeat Business*, *In the Black*, *Iron Ledger*). The full cabinet
+going (*Repeat Business*, *In the Black*, *Iron Ledger*, *Quarter Book*,
+*Annual Audit*) — with *Century Ledger* for a hundred settlements in all.
+The full cabinet
 lives under **Commendations** below the sheet, and new ones are stamped into
 your shareable result.
 

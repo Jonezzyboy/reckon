@@ -139,6 +139,15 @@ const BADGES = [
   { id: 'iron-ledger', seal: '30', name: 'Iron Ledger',
     desc: 'Settle thirty days running.',
     test: (c) => c.streak >= 30 },
+  { id: 'quarter-book', seal: '90', name: 'Quarter Book',
+    desc: 'Settle ninety days running.',
+    test: (c) => c.streak >= 90 },
+  { id: 'annual-audit', seal: '1yr', name: 'Annual Audit',
+    desc: 'Settle a full year running.',
+    test: (c) => c.streak >= 365 },
+  { id: 'century-ledger', seal: '100', name: 'Century Ledger',
+    desc: 'Settle one hundred accounts in all.',
+    test: (c) => c.wins >= 100 },
 ];
 
 if (typeof module !== 'undefined' && module.exports) {
@@ -553,6 +562,51 @@ if (typeof document !== 'undefined') (function () {
     $('#stats').textContent = `Streak ${s.streak} · Settled ${s.wins}/${s.played}`;
   }
 
+  function renderBooks() {
+    const s = loadStats();
+    $('#books').hidden = s.played === 0;
+    if (s.played === 0) return;
+
+    const history = loadHistory();
+    const late = history.filter((h) => h.solved && h.late).length;
+    const figures = [
+      ['Accounts settled', `${s.wins} of ${s.played}`],
+      ['Settle rate', `${Math.round((s.wins / s.played) * 100)}%`],
+      ['Current run', `${s.streak} day${s.streak === 1 ? '' : 's'}`],
+      ['Best run', `${s.maxStreak} day${s.maxStreak === 1 ? '' : 's'}`],
+    ];
+    if (late) figures.push(['Settled late', `${late}`]);
+    const ul = $('#bookFigures');
+    ul.innerHTML = '';
+    for (const [k, v] of figures) ul.appendChild(ledgerLine(k, v, ''));
+
+    const counts = [0, 0, 0, 0, 0];
+    for (const h of history) {
+      if (h.solved && h.lines >= 1 && h.lines <= 5) counts[h.lines - 1]++;
+    }
+    const most = Math.max(...counts, 1);
+    const ol = $('#bookDist');
+    ol.innerHTML = '';
+    for (let i = 0; i < 5; i++) {
+      const li = document.createElement('li');
+      const label = document.createElement('span');
+      label.className = 'dist-label';
+      label.textContent = `In ${i + 1} line${i === 0 ? '' : 's'}`;
+      const bar = document.createElement('span');
+      bar.className = 'dist-bar';
+      bar.style.width = counts[i] ? `${(counts[i] / most) * 100}%` : '2px';
+      if (!counts[i]) bar.classList.add('zero');
+      const track = document.createElement('span');
+      track.className = 'dist-track';
+      track.appendChild(bar);
+      const count = document.createElement('span');
+      count.className = 'dist-count';
+      count.textContent = counts[i];
+      li.append(label, track, count);
+      ol.appendChild(li);
+    }
+  }
+
   function dateForDay(d) {
     return new Date(EPOCH.y, EPOCH.m, EPOCH.d + d).toLocaleDateString(undefined, {
       day: 'numeric', month: 'short', year: 'numeric',
@@ -589,18 +643,25 @@ if (typeof document !== 'undefined') (function () {
     renderControls();
     renderResult();
     renderStats();
+    renderBooks();
     renderHistory();
     renderBadges();
   }
 
   /* ---------- share & clock ---------- */
 
+  const OP_EMOJI = { '+': '➕', '-': '➖', '*': '✖️', '/': '➗' };
+
   $('#share').addEventListener('click', () => {
     const n = state.moves.length;
     let text = `🧾 Reckon No. ${day + 1} — settled${archive ? ' late' : ''} in ${n} line${n === 1 ? '' : 's'}`;
+    text += `\n${state.moves.map((m) => OP_EMOJI[m.op]).join('')}`;
+    const s = loadStats();
+    if (!archive && s.streak > 1) text += `\n📈 ${s.streak} days running`;
     const earned = loadBadges();
     const fresh = archive ? [] : BADGES.filter((b) => earned[b.id] === day).map((b) => b.name);
     if (fresh.length) text += `\n🏅 ${fresh.join(' · ')}`;
+    text += '\nhttps://jonezzyboy.github.io/reckon/';
     navigator.clipboard.writeText(text).then(() => {
       $('#share').textContent = 'Copied';
       setTimeout(() => { $('#share').textContent = 'Copy result'; }, 2000);
@@ -723,6 +784,11 @@ if (typeof document !== 'undefined') (function () {
     else if (e.key === '*' || e.key.toLowerCase() === 'x') onOp('*');
     else if (e.key === '/') { e.preventDefault(); onOp('/'); }
   });
+
+  // First visit: open the rules for them
+  if (!loadJSON(STATS_KEY) && !loadJSON(DAY_KEY)) {
+    document.querySelector('.rules').open = true;
+  }
 
   const saved = loadJSON(SLOT_KEY);
   if (saved && saved.day === day) {

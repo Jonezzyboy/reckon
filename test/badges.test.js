@@ -51,5 +51,14 @@ expect('in-the-black', { ...base, streak: 7 }, true);
 expect('iron-ledger', { ...base, streak: 29 }, false);
 expect('iron-ledger', { ...base, streak: 30 }, true);
 
+expect('quarter-book', { ...base, streak: 89 }, false);
+expect('quarter-book', { ...base, streak: 90 }, true);
+
+expect('annual-audit', { ...base, streak: 364 }, false);
+expect('annual-audit', { ...base, streak: 365 }, true);
+
+expect('century-ledger', { ...base, wins: 99 }, false);
+expect('century-ledger', { ...base, wins: 100 }, true);
+
 console.log(`${BADGES.length} badges checked, ${failures} failures`);
 process.exit(failures ? 1 : 0);
