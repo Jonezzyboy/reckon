@@ -10,11 +10,18 @@ It's listed alongside everything else on the homepage,
 
 ## How to play
 
-- Combine the six numbers with `+ − × ÷` to hit the target exactly.
-- Pick a number, an operation, then a second number. The result is pencilled
-  in as a new figure you can spend.
-- Each figure may be spent once. Subtraction must stay positive and division
-  must come out even — the ledger holds only positive whole numbers.
+You're handed six figures and an **amount due**. Settle the account exactly.
+
+1. Pick a figure, then an operation (`+ − × ÷`), then a second figure.
+2. The result is pencilled in as a new figure you can spend — e.g.
+   `75 × 4 = 300`.
+3. Hit the amount due exactly to earn the red **SETTLED** stamp.
+
+House rules:
+
+- Each figure may be spent only once — results included.
+- Subtraction must stay positive and division must come out even; the ledger
+  holds only positive whole numbers.
 - A fresh account opens at local midnight. Streaks and results are kept in
   `localStorage`.
 - **Past accounts** (below the sheet) lists each previous day's result — the
