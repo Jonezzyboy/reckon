@@ -22,11 +22,23 @@
   <p class="tagline">Six numbers. Four operations. One total to settle.</p>
   <details class="rules">
     <summary>How to play</summary>
-    <p>Combine the six figures with +, −, × and ÷ to hit the amount due exactly.
-    Pick a number, an operation, then a second number — the result is pencilled
-    in as a new figure you can spend. Each figure may be spent once.
-    Subtraction must stay positive and division must come out even: this ledger
-    holds only positive whole numbers. A fresh account opens at midnight.</p>
+    <div class="rules-body">
+      <ol class="rules-steps">
+        <li>Pick a figure, then an operation
+          (<span class="key">+</span> <span class="key">−</span>
+          <span class="key">×</span> <span class="key">÷</span>),
+          then a second figure.</li>
+        <li>The result is pencilled in as a new figure you can spend —
+          <span class="eg">75&nbsp;×&nbsp;4&nbsp;=&nbsp;300</span>.</li>
+        <li>Hit the amount due exactly to earn the <em>Settled</em> stamp.</li>
+      </ol>
+      <ul class="rules-fine">
+        <li>Each figure may be spent only once.</li>
+        <li>Subtraction must stay positive, division must come out even —
+          this ledger holds only positive whole numbers.</li>
+        <li>A fresh account opens at midnight.</li>
+      </ul>
+    </div>
   </details>
 </header>
 
@@ -64,6 +76,13 @@
   <p id="resultText"></p>
   <p class="new-badges" id="newBadges" hidden></p>
   <button id="share" hidden>Copy result</button>
+</section>
+
+<section class="history" id="history" hidden>
+  <details>
+    <summary>Past accounts</summary>
+    <ol id="historyLines"></ol>
+  </details>
 </section>
 
 <section class="badges">

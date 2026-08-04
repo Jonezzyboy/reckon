@@ -154,6 +154,7 @@ if (typeof document !== 'undefined') (function () {
 
   const DAY_KEY = 'reckon-day-v1';
   const STATS_KEY = 'reckon-stats-v1';
+  const HISTORY_KEY = 'reckon-history-v1';
   const BADGES_KEY = 'reckon-badges-v1';
 
   const day = todayIndex();
@@ -198,6 +199,11 @@ if (typeof document !== 'undefined') (function () {
     localStorage.setItem(STATS_KEY, JSON.stringify(stats));
   }
 
+  function loadHistory() {
+    const h = loadJSON(HISTORY_KEY);
+    return Array.isArray(h) ? h : [];
+  }
+
   function recordResult(won) {
     const stats = loadStats();
     if (stats.lastPlayedDay === day) return;
@@ -212,6 +218,9 @@ if (typeof document !== 'undefined') (function () {
       stats.streak = 0;
     }
     saveStats(stats);
+    const history = loadHistory();
+    history.push({ day, solved: won, lines: won ? state.moves.length : null });
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
   }
 
   function loadBadges() {
@@ -476,6 +485,26 @@ if (typeof document !== 'undefined') (function () {
     $('#stats').textContent = `Streak ${s.streak} · Settled ${s.wins}/${s.played}`;
   }
 
+  function dateForDay(d) {
+    return new Date(EPOCH.y, EPOCH.m, EPOCH.d + d).toLocaleDateString(undefined, {
+      day: 'numeric', month: 'short', year: 'numeric',
+    });
+  }
+
+  function renderHistory() {
+    const history = loadHistory();
+    $('#history').hidden = history.length === 0;
+    const ol = $('#historyLines');
+    ol.innerHTML = '';
+    for (const h of history.slice().sort((x, y) => y.day - x.day)) {
+      const amt = h.solved
+        ? `settled in ${h.lines} line${h.lines === 1 ? '' : 's'}`
+        : 'left open';
+      ol.appendChild(ledgerLine(`No. ${h.day + 1} · ${dateForDay(h.day)}`, amt,
+        h.solved ? 'settled' : 'open'));
+    }
+  }
+
   function renderAll() {
     renderTiles();
     renderOps();
@@ -483,6 +512,7 @@ if (typeof document !== 'undefined') (function () {
     renderControls();
     renderResult();
     renderStats();
+    renderHistory();
     renderBadges();
   }
 
