@@ -588,7 +588,11 @@ if (typeof document !== 'undefined') (function () {
   function themeChip(t) {
     const chip = document.createElement('span');
     chip.className = 'chip';
-    chip.style.background = `linear-gradient(135deg, ${t.desk} 0 62%, ${t.paper} 62%)`;
+    chip.style.background = t.desk;
+    const leaf = document.createElement('span');
+    leaf.className = 'chip-leaf';
+    leaf.style.background = t.paper;
+    chip.appendChild(leaf);
     return chip;
   }
 
@@ -596,8 +600,11 @@ if (typeof document !== 'undefined') (function () {
     if (themeId) document.documentElement.dataset.theme = themeId;
     else delete document.documentElement.dataset.theme;
     const t = THEMES.find((x) => x.id === themeId);
+    const label = document.createElement('span');
+    label.className = 'theme-label';
+    label.textContent = 'Stationery';
     themeBtn.innerHTML = '';
-    themeBtn.append(themeChip(t), document.createTextNode(t.name));
+    themeBtn.append(themeChip(t), label);
   }
 
   function closeThemeMenu() {
