@@ -4,6 +4,10 @@ A daily numbers game dressed as a bookkeeper's ledger. Six figures, four
 operations, one amount due — settle the account exactly and earn the red
 **SETTLED** stamp.
 
+**Play it at <https://jonezzyboy.github.io/reckon/>.**
+<https://jonezzyboy.github.io/> redirects there — the apex repo exists only to
+host the AdSense `ads.txt`, which must live at the domain root.
+
 ## How to play
 
 - Combine the six numbers with `+ − × ÷` to hit the target exactly.
