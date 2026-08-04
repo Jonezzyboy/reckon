@@ -24,9 +24,11 @@ House rules:
   holds only positive whole numbers.
 - A fresh account opens at local midnight. Streaks, results and commendations
   are kept in `localStorage`.
-- **Past accounts** (below the sheet) lists each previous day's result — the
-  puzzle number, its date, and whether the account was settled and in how many
-  lines.
+- **Past accounts** (below the sheet) lists every previous day — the puzzle
+  number, its date, and whether the account was settled and in how many lines.
+  Each entry links to that day's puzzle (also reachable at `?no=N`), reopened
+  for practice: settling one is recorded as *settled late*, but streaks, stats
+  and commendations are untouched.
 
 ## Commendations
 

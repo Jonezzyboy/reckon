@@ -157,7 +157,11 @@ if (typeof document !== 'undefined') (function () {
   const HISTORY_KEY = 'reckon-history-v1';
   const BADGES_KEY = 'reckon-badges-v1';
 
-  const day = todayIndex();
+  const today = todayIndex();
+  // ?no=N reopens past account N for practice; anything else means today.
+  const requested = Number(new URLSearchParams(location.search).get('no')) - 1;
+  const archive = Number.isInteger(requested) && requested >= 0 && requested < today;
+  const day = archive ? requested : today;
   const puzzle = generatePuzzle(day);
 
   const state = {
@@ -178,8 +182,11 @@ if (typeof document !== 'undefined') (function () {
     try { return JSON.parse(localStorage.getItem(key)) || null; } catch { return null; }
   }
 
+  // Archive days get their own slot so practice never clobbers today's board.
+  const SLOT_KEY = archive ? `${DAY_KEY}:${day}` : DAY_KEY;
+
   function saveDay() {
-    localStorage.setItem(DAY_KEY, JSON.stringify({
+    localStorage.setItem(SLOT_KEY, JSON.stringify({
       day,
       moves: state.moves.map((m) => [m.aId, m.op, m.bId]),
       solved: state.solved,
@@ -204,7 +211,25 @@ if (typeof document !== 'undefined') (function () {
     return Array.isArray(h) ? h : [];
   }
 
+  // Archive plays never touch stats or streaks. A late settle is still
+  // worth recording, and may close an account originally left open.
+  function recordArchiveResult(won) {
+    if (!won) return;
+    const history = loadHistory();
+    const existing = history.find((h) => h.day === day);
+    if (existing && existing.solved) return;
+    if (existing) {
+      existing.solved = true;
+      existing.lines = state.moves.length;
+      existing.late = true;
+    } else {
+      history.push({ day, solved: true, lines: state.moves.length, late: true });
+    }
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  }
+
   function recordResult(won) {
+    if (archive) return recordArchiveResult(won);
     const stats = loadStats();
     if (stats.lastPlayedDay === day) return;
     stats.played++;
@@ -293,7 +318,7 @@ if (typeof document !== 'undefined') (function () {
     state.solved = true;
     state.sel = { aId: null, op: null };
     recordResult(true);
-    awardBadges();
+    if (!archive) awardBadges();
     const stamp = $('#stamp');
     stamp.hidden = false;
     if (!animate) stamp.style.animation = 'none';
@@ -442,10 +467,12 @@ if (typeof document !== 'undefined') (function () {
     if (!finished()) return;
     const n = state.moves.length;
     $('#resultText').textContent = state.solved
-      ? `Account settled in ${n} line${n === 1 ? '' : 's'}.`
-      : 'The books stay open today. Tomorrow brings a fresh account.';
+      ? `Account settled${archive ? ' late' : ''} in ${n} line${n === 1 ? '' : 's'}.`
+      : archive
+        ? 'This past account stays open.'
+        : 'The books stay open today. Tomorrow brings a fresh account.';
     const earned = loadBadges();
-    const fresh = BADGES.filter((b) => earned[b.id] === day);
+    const fresh = archive ? [] : BADGES.filter((b) => earned[b.id] === day);
     const nb = $('#newBadges');
     nb.hidden = fresh.length === 0;
     nb.textContent = fresh.length
@@ -462,7 +489,8 @@ if (typeof document !== 'undefined') (function () {
     for (const b of BADGES) {
       const got = b.id in earned;
       const li = document.createElement('li');
-      li.className = 'badge' + (got ? ' earned' : '') + (earned[b.id] === day ? ' fresh' : '');
+      li.className = 'badge' + (got ? ' earned' : '')
+        + (!archive && earned[b.id] === day ? ' fresh' : '');
       const seal = document.createElement('span');
       seal.className = 'seal';
       seal.textContent = b.seal;
@@ -492,16 +520,25 @@ if (typeof document !== 'undefined') (function () {
   }
 
   function renderHistory() {
-    const history = loadHistory();
-    $('#history').hidden = history.length === 0;
+    $('#history').hidden = today === 0;
+    if (today === 0) return;
+    const byDay = new Map(loadHistory().map((h) => [h.day, h]));
     const ol = $('#historyLines');
     ol.innerHTML = '';
-    for (const h of history.slice().sort((x, y) => y.day - x.day)) {
-      const amt = h.solved
-        ? `settled in ${h.lines} line${h.lines === 1 ? '' : 's'}`
-        : 'left open';
-      ol.appendChild(ledgerLine(`No. ${h.day + 1} · ${dateForDay(h.day)}`, amt,
-        h.solved ? 'settled' : 'open'));
+    for (let d = today - 1; d >= 0; d--) {
+      const h = byDay.get(d);
+      const amt = !h ? 'not attempted'
+        : h.solved
+          ? `settled${h.late ? ' late' : ''} in ${h.lines} line${h.lines === 1 ? '' : 's'}`
+          : 'left open';
+      const cls = (!h ? 'blank' : h.solved ? 'settled' : 'open')
+        + (archive && d === day ? ' current' : '');
+      const li = ledgerLine('', amt, cls);
+      const a = document.createElement('a');
+      a.href = `?no=${d + 1}`;
+      a.textContent = `No. ${d + 1} · ${dateForDay(d)}`;
+      li.querySelector('.expr').appendChild(a);
+      ol.appendChild(li);
     }
   }
 
@@ -520,9 +557,9 @@ if (typeof document !== 'undefined') (function () {
 
   $('#share').addEventListener('click', () => {
     const n = state.moves.length;
-    let text = `Reckon No. ${day + 1} 🧾\nSettled in ${n} line${n === 1 ? '' : 's'}.`;
+    let text = `Reckon No. ${day + 1} 🧾\nSettled${archive ? ' late' : ''} in ${n} line${n === 1 ? '' : 's'}.`;
     const earned = loadBadges();
-    const fresh = BADGES.filter((b) => earned[b.id] === day).map((b) => b.name);
+    const fresh = archive ? [] : BADGES.filter((b) => earned[b.id] === day).map((b) => b.name);
     if (fresh.length) text += `\n🏅 ${fresh.join(' · ')}`;
     navigator.clipboard.writeText(text).then(() => {
       $('#share').textContent = 'Copied';
@@ -541,9 +578,12 @@ if (typeof document !== 'undefined') (function () {
   /* ---------- boot ---------- */
 
   $('#issue').textContent = `No. ${day + 1}`;
-  $('#date').textContent = new Date().toLocaleDateString(undefined, {
+  const shownDate = archive ? new Date(EPOCH.y, EPOCH.m, EPOCH.d + day) : new Date();
+  $('#date').textContent = shownDate.toLocaleDateString(undefined, {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   });
+  $('#archiveNote').hidden = !archive;
+  if (archive) $('.history details').open = true;
   $('#target').textContent = puzzle.target;
 
   document.querySelectorAll('.op').forEach((btn) =>
@@ -561,7 +601,7 @@ if (typeof document !== 'undefined') (function () {
     else if (e.key === '/') { e.preventDefault(); onOp('/'); }
   });
 
-  const saved = loadJSON(DAY_KEY);
+  const saved = loadJSON(SLOT_KEY);
   if (saved && saved.day === day) {
     if (saved.revised) state.revised = true;
     for (const [aId, op, bId] of saved.moves) {
@@ -579,6 +619,10 @@ if (typeof document !== 'undefined') (function () {
   }
 
   renderAll();
-  tick();
-  setInterval(tick, 1000);
+  if (archive) {
+    $('#next').textContent = 'Past account · practice only';
+  } else {
+    tick();
+    setInterval(tick, 1000);
+  }
 })();

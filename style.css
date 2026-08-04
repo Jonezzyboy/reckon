@@ -531,6 +531,34 @@ button {
 
 .history li.open .amt { color: var(--ink-soft); font-weight: 500; }
 
+.history li.blank .amt { color: var(--ink-soft); font-weight: 500; opacity: 0.65; }
+
+.history .expr a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px dashed var(--ink-soft);
+}
+
+.history .expr a:hover {
+  color: var(--red);
+  border-bottom: 1px solid var(--red);
+}
+
+.history li.current .expr a {
+  color: var(--red);
+  font-weight: 700;
+  border-bottom: 1px solid var(--red);
+}
+
+.archive-note {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--red);
+}
+
+.archive-note a { color: inherit; }
+
 /* ---------- commendations ---------- */
 
 .badges {
