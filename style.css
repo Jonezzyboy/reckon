@@ -95,10 +95,84 @@ button {
   border-bottom: 1px dashed var(--ink-soft);
 }
 
-.rules p {
+.rules-body {
   max-width: 46ch;
-  margin: 10px auto 0;
+  margin: 12px auto 0;
   text-align: left;
+  background: var(--sheet);
+  border: 1px solid var(--rule-strong);
+  border-radius: 3px;
+  padding: 14px 18px;
+  box-shadow: 0 1px 0 rgba(34, 48, 31, 0.08);
+}
+
+.rules-steps {
+  list-style: none;
+  counter-reset: step;
+  display: grid;
+  gap: 8px;
+}
+
+.rules-steps li {
+  counter-increment: step;
+  position: relative;
+  padding-left: 26px;
+}
+
+.rules-steps li::before {
+  content: counter(step) ".";
+  position: absolute;
+  left: 0;
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--red);
+}
+
+.rules .key {
+  display: inline-block;
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--red);
+  border: 1px solid var(--red-faint);
+  border-radius: 4px;
+  padding: 2px 5px 3px;
+}
+
+.rules .eg {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.rules em {
+  font-family: var(--display);
+  color: var(--red);
+}
+
+.rules-fine {
+  list-style: none;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--rule-strong);
+  display: grid;
+  gap: 5px;
+  font-size: 13px;
+}
+
+.rules-fine li {
+  position: relative;
+  padding-left: 16px;
+}
+
+.rules-fine li::before {
+  content: "·";
+  position: absolute;
+  left: 2px;
+  font-weight: 700;
+  color: var(--red);
 }
 
 /* ---------- the sheet ---------- */
