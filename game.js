@@ -567,6 +567,34 @@ if (typeof document !== 'undefined') (function () {
     });
   });
 
+  /* ---------- stationery ---------- */
+
+  const THEME_KEY = 'reckon-theme-v1';
+  const THEMES = [
+    { id: '', name: 'Counting house' },
+    { id: 'sage', name: 'Sage ledger' },
+    { id: 'nightwatch', name: 'Nightwatch' },
+  ];
+
+  let themeId = localStorage.getItem(THEME_KEY) || '';
+  if (!THEMES.some((t) => t.id === themeId)) themeId = '';
+
+  function applyTheme() {
+    if (themeId) document.documentElement.dataset.theme = themeId;
+    else delete document.documentElement.dataset.theme;
+    $('#theme').textContent =
+      `Stationery: ${THEMES.find((t) => t.id === themeId).name}`;
+  }
+
+  $('#theme').addEventListener('click', () => {
+    const i = THEMES.findIndex((t) => t.id === themeId);
+    themeId = THEMES[(i + 1) % THEMES.length].id;
+    localStorage.setItem(THEME_KEY, themeId);
+    applyTheme();
+  });
+
+  applyTheme();
+
   function tick() {
     const ms = msToMidnight();
     const h = String(Math.floor(ms / 3.6e6)).padStart(2, '0');
