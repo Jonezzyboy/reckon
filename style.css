@@ -1,17 +1,21 @@
 :root {
-  --paper: #e9efdd;
-  --sheet: #f4f7ea;
-  --rule: #cdd9ba;
-  --rule-strong: #b7c6a3;
-  --ink: #22301f;
-  --ink-soft: #6e7c64;
-  --red: #a32b33;
-  --red-faint: rgba(163, 43, 51, 0.5);
-  --green: #2f6b4c;
-  --tile: #fbfcf3;
-  --display: "Zilla Slab", "Iowan Old Style", Georgia, serif;
+  --desk: #31443a;
+  --desk-soft: #a9bbae;
+  --desk-bright: #ccd8cf;
+  --paper: #f9f5e8;
+  --paper-hi: #fffdf4;
+  --feint: #b9c9da;
+  --feint-soft: #cfdae6;
+  --ink: #1c2420;
+  --soft: #6d7365;
+  --red: #b3282d;
+  --red-lift: #e37d74;
+  --red-faint: rgba(179, 40, 45, 0.45);
+  --green: #2c6a4a;
+  --display: "Besley", "Iowan Old Style", Georgia, serif;
   --mono: "Spline Sans Mono", ui-monospace, "SF Mono", Menlo, monospace;
   --body: "Spline Sans", -apple-system, "Segoe UI", sans-serif;
+  --line: 41px; /* the ledger's ruling grid */
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -19,7 +23,7 @@
 html { color-scheme: light; }
 
 body {
-  background: var(--paper);
+  background: var(--desk);
   color: var(--ink);
   font-family: var(--body);
   font-size: 16px;
@@ -28,7 +32,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 32px 16px 48px;
+  padding: 40px 16px 56px;
 }
 
 button {
@@ -40,36 +44,37 @@ button {
 }
 
 :focus-visible {
-  outline: 2px dashed var(--red);
+  outline: 2px dashed currentColor;
   outline-offset: 3px;
 }
 
-/* ---------- masthead ---------- */
+/* ---------- masthead (on the desk) ---------- */
 
 .masthead {
   width: min(560px, 100%);
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
+  color: var(--paper);
 }
 
 .wordmark {
   font-family: var(--display);
-  font-weight: 700;
-  font-size: clamp(40px, 9vw, 52px);
+  font-weight: 900;
+  font-size: clamp(44px, 10vw, 58px);
   letter-spacing: -0.01em;
   line-height: 1;
 }
 
-.wordmark .stop { color: var(--red); }
+.wordmark .stop { color: var(--red-lift); }
 
 .meta {
   font-family: var(--mono);
   font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--ink-soft);
-  margin-top: 10px;
+  color: var(--desk-soft);
+  margin-top: 12px;
 }
 
 .tagline {
@@ -77,33 +82,35 @@ button {
   font-weight: 500;
   font-style: italic;
   font-size: 17px;
-  color: var(--ink-soft);
+  color: var(--desk-soft);
   margin-top: 6px;
 }
 
 .rules {
-  margin-top: 14px;
+  margin-top: 16px;
   font-size: 14px;
-  color: var(--ink-soft);
+  color: var(--soft);
 }
 
 .rules summary {
   cursor: pointer;
   display: inline-block;
   font-weight: 500;
-  color: var(--ink);
-  border-bottom: 1px dashed var(--ink-soft);
+  color: var(--paper);
+  border-bottom: 1px dashed var(--desk-soft);
 }
+
+.rules summary:hover { border-bottom-color: var(--paper); }
 
 .rules-body {
   max-width: 46ch;
-  margin: 12px auto 0;
+  margin: 16px auto 0;
   text-align: left;
-  background: var(--sheet);
-  border: 1px solid var(--rule-strong);
-  border-radius: 3px;
-  padding: 14px 18px;
-  box-shadow: 0 1px 0 rgba(34, 48, 31, 0.08);
+  color: var(--desk-bright);
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(249, 245, 232, 0.12);
+  border-radius: 4px;
+  padding: 16px 20px;
 }
 
 .rules-steps {
@@ -125,7 +132,7 @@ button {
   left: 0;
   font-family: var(--mono);
   font-weight: 700;
-  color: var(--red);
+  color: var(--red-lift);
 }
 
 .rules .key {
@@ -134,8 +141,8 @@ button {
   font-weight: 700;
   font-size: 12px;
   line-height: 1;
-  color: var(--red);
-  border: 1px solid var(--red-faint);
+  color: var(--red-lift);
+  border: 1px solid rgba(227, 125, 116, 0.5);
   border-radius: 4px;
   padding: 2px 5px 3px;
 }
@@ -144,22 +151,23 @@ button {
   font-family: var(--mono);
   font-weight: 700;
   font-size: 13px;
-  color: var(--ink);
+  color: var(--paper);
 }
 
 .rules em {
   font-family: var(--display);
-  color: var(--red);
+  color: var(--red-lift);
 }
 
 .rules-fine {
   list-style: none;
   margin-top: 12px;
   padding-top: 10px;
-  border-top: 1px dashed var(--rule-strong);
+  border-top: 1px dashed rgba(249, 245, 232, 0.25);
   display: grid;
   gap: 5px;
   font-size: 13px;
+  color: var(--desk-soft);
 }
 
 .rules-fine li {
@@ -172,42 +180,43 @@ button {
   position: absolute;
   left: 2px;
   font-weight: 700;
-  color: var(--red);
+  color: var(--red-lift);
 }
 
-/* ---------- the sheet ---------- */
+/* ---------- the sheet: one ivory leaf on the desk ---------- */
 
 .sheet {
   position: relative;
   width: min(560px, 100%);
-  background: var(--sheet);
-  border: 1px solid var(--rule-strong);
-  border-radius: 3px;
-  box-shadow: 0 1px 0 rgba(34, 48, 31, 0.08), 0 12px 32px -18px rgba(34, 48, 31, 0.35);
-  padding: 28px 28px 24px 64px;
+  background: var(--paper);
+  border-radius: 2px;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.25),
+    0 24px 48px -20px rgba(0, 0, 0, 0.55);
+  padding: 30px 30px 26px 66px;
 }
 
-/* the double red margin rule of a real ledger page */
+/* the double red account rule of a real ledger leaf */
 .sheet::before {
   content: "";
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 40px;
+  left: 42px;
   width: 5px;
   border-left: 1.5px solid var(--red-faint);
   border-right: 1.5px solid var(--red-faint);
   pointer-events: none;
 }
 
-/* ---------- amount due ---------- */
+/* ---------- amount due: a double-ruled total ---------- */
 
 .due {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 22px;
+  margin-bottom: 24px;
 }
 
 .due-label {
@@ -216,19 +225,18 @@ button {
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--ink-soft);
+  color: var(--soft);
 }
 
 .due-value {
-  font-family: var(--mono);
-  font-weight: 700;
-  font-size: clamp(40px, 10vw, 52px);
-  line-height: 1;
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: clamp(48px, 12vw, 64px);
+  line-height: 0.95;
   color: var(--red);
-  border: 2px solid var(--red);
-  border-radius: 4px;
-  padding: 4px 14px 6px;
-  transform: rotate(-1.5deg);
+  padding: 0 6px 8px;
+  border-bottom: 7px double var(--red);
+  font-variant-numeric: lining-nums;
 }
 
 /* ---------- tiles ---------- */
@@ -237,7 +245,7 @@ button {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .tile {
@@ -247,10 +255,10 @@ button {
   min-width: 64px;
   height: 52px;
   padding: 0 12px;
-  background: var(--tile);
-  border: 1.5px solid var(--ink);
-  border-radius: 6px;
-  box-shadow: 0 2px 0 var(--ink);
+  background: var(--paper-hi);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  box-shadow: 0 3px 0 var(--ink);
   transition: transform 80ms ease, box-shadow 80ms ease;
 }
 
@@ -258,18 +266,18 @@ button {
 
 .tile.selected {
   background: var(--ink);
-  color: var(--sheet);
-  transform: translateY(2px);
+  color: var(--paper);
+  transform: translateY(3px);
   box-shadow: none;
 }
 
 /* results are pencilled in, not printed */
-.tile.made { border-style: dashed; }
+.tile.made { border-style: dashed; box-shadow: 0 3px 0 var(--soft); border-color: var(--ink); }
 
 .tile.used {
-  opacity: 0.4;
+  opacity: 0.35;
   text-decoration: line-through 2px var(--red);
-  border-color: var(--ink-soft);
+  border-color: var(--soft);
   box-shadow: none;
   cursor: default;
 }
@@ -288,7 +296,7 @@ button {
   font-size: 22px;
   width: 46px;
   height: 46px;
-  border: 1.5px solid var(--red);
+  border: 2px solid var(--red);
   border-radius: 50%;
   color: var(--red);
   transition: background 80ms ease, color 80ms ease;
@@ -297,7 +305,7 @@ button {
 .op.selected,
 .op:not(:disabled):hover {
   background: var(--red);
-  color: var(--sheet);
+  color: var(--paper);
 }
 
 .op:disabled { opacity: 0.35; cursor: default; }
@@ -310,7 +318,7 @@ button {
   font-size: 14px;
   color: var(--red);
   min-height: 22px;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .note.shake { animation: shake 240ms ease; }
@@ -321,42 +329,50 @@ button {
   75% { transform: translateX(-2px); }
 }
 
-/* ---------- the ledger ---------- */
+/* ---------- the ledger: blue feint ruling, entries on the lines ---------- */
 
 .ledger ol {
   list-style: none;
   counter-reset: line;
-  min-height: 132px;
+  min-height: calc(var(--line) * 5);
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(var(--line) - 1px),
+    var(--feint) calc(var(--line) - 1px),
+    var(--feint) var(--line)
+  );
 }
 
 .ledger li {
   counter-increment: line;
+  position: relative;
   display: flex;
   align-items: baseline;
   gap: 10px;
   font-family: var(--mono);
   font-weight: 500;
   font-size: 17px;
-  padding: 6px 0 4px;
-  border-bottom: 1px solid var(--rule);
+  height: var(--line);
+  line-height: var(--line);
 }
 
+/* folio numbers live in the outer margin, clear of the red rule */
 .ledger li::before {
   content: counter(line, decimal-leading-zero);
+  position: absolute;
+  left: -30px;
+  transform: translateX(-100%);
   font-size: 11px;
   letter-spacing: 0.08em;
-  color: var(--ink-soft);
-  position: relative;
-  left: -34px;
-  width: 0;
-  overflow: visible;
+  color: var(--soft);
 }
 
 .ledger .leader {
   flex: 1;
-  border-bottom: 1px dotted var(--ink-soft);
-  opacity: 0.6;
-  transform: translateY(-4px);
+  border-bottom: 1px dotted var(--soft);
+  opacity: 0.55;
+  transform: translateY(-5px);
 }
 
 .ledger .amt { font-weight: 700; }
@@ -365,8 +381,11 @@ button {
 
 .ledger li.empty,
 .ledger li.pending {
-  color: var(--ink-soft);
+  color: var(--soft);
 }
+
+.ledger li.empty,
+.ledger li.audit-label { counter-increment: none; }
 
 .ledger li.empty::before,
 .ledger li.audit-label::before { content: ""; }
@@ -374,6 +393,7 @@ button {
 .ledger li.empty {
   font-family: var(--display);
   font-style: italic;
+  font-weight: 500;
   font-size: 15px;
 }
 
@@ -381,7 +401,7 @@ button {
   display: inline-block;
   width: 9px;
   height: 17px;
-  background: var(--ink-soft);
+  background: var(--soft);
   animation: blink 1.1s steps(1) infinite;
   transform: translateY(2px);
 }
@@ -391,10 +411,9 @@ button {
 .ledger li.audit-label {
   font-family: var(--display);
   font-style: italic;
+  font-weight: 500;
   font-size: 15px;
   color: var(--green);
-  border-bottom-color: transparent;
-  padding-top: 14px;
 }
 
 .ledger li.audit { color: var(--green); }
@@ -404,14 +423,14 @@ button {
 .controls {
   display: flex;
   gap: 18px;
-  margin-top: 18px;
+  margin-top: 20px;
 }
 
 .ghost {
   font-size: 14px;
   font-weight: 500;
-  color: var(--ink-soft);
-  border-bottom: 1px dashed var(--ink-soft);
+  color: var(--soft);
+  border-bottom: 1px dashed var(--soft);
   padding-bottom: 1px;
 }
 
@@ -432,7 +451,7 @@ button {
   top: 52%;
   left: 50%;
   font-family: var(--display);
-  font-weight: 700;
+  font-weight: 900;
   font-size: clamp(48px, 12vw, 64px);
   line-height: 1;
   letter-spacing: 0.1em;
@@ -453,40 +472,45 @@ button {
   to   { transform: translate(-50%, -50%) rotate(-7deg) scale(1); opacity: 0.88; }
 }
 
-/* ---------- result & footer ---------- */
+/* ---------- result & footer (on the desk) ---------- */
 
 .result {
   width: min(560px, 100%);
   text-align: center;
-  margin-top: 20px;
+  margin-top: 24px;
   font-family: var(--display);
   font-size: 19px;
+  color: var(--paper);
 }
 
 .result button {
-  margin-top: 10px;
-  font-family: var(--body);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--sheet);
-  background: var(--ink);
-  border-radius: 6px;
-  padding: 9px 18px;
-  box-shadow: 0 2px 0 rgba(34, 48, 31, 0.5);
+  margin-top: 12px;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: var(--red);
+  border-radius: 3px;
+  padding: 10px 20px;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
 }
 
-.result button:active { transform: translateY(2px); box-shadow: none; }
+.result button:active { transform: translateY(3px); box-shadow: none; }
 
 .new-badges {
   margin-top: 8px;
   font-style: italic;
   font-size: 16px;
-  color: var(--red);
+  color: var(--red-lift);
 }
+
+/* ---------- past accounts ---------- */
 
 .history {
   width: min(560px, 100%);
-  margin-top: 24px;
+  margin-top: 28px;
   text-align: center;
 }
 
@@ -495,16 +519,20 @@ button {
   display: inline-block;
   font-size: 14px;
   font-weight: 500;
-  color: var(--ink-soft);
-  border-bottom: 1px dashed var(--ink-soft);
+  color: var(--desk-soft);
+  border-bottom: 1px dashed var(--desk-soft);
 }
 
-.history summary:hover { color: var(--ink); border-bottom-color: var(--ink); }
+.history summary:hover { color: var(--paper); border-bottom-color: var(--paper); }
 
 .history ol {
   list-style: none;
-  margin-top: 12px;
+  margin-top: 14px;
   text-align: left;
+  background: var(--paper);
+  border-radius: 2px;
+  padding: 10px 20px;
+  box-shadow: 0 10px 24px -12px rgba(0, 0, 0, 0.5);
 }
 
 .history li {
@@ -514,14 +542,16 @@ button {
   font-family: var(--mono);
   font-weight: 500;
   font-size: 14px;
-  padding: 6px 0 4px;
-  border-bottom: 1px solid var(--rule);
+  padding: 7px 0 5px;
+  border-bottom: 1px solid var(--feint-soft);
 }
+
+.history li:last-child { border-bottom: none; }
 
 .history .leader {
   flex: 1;
-  border-bottom: 1px dotted var(--ink-soft);
-  opacity: 0.6;
+  border-bottom: 1px dotted var(--soft);
+  opacity: 0.55;
   transform: translateY(-4px);
 }
 
@@ -529,14 +559,14 @@ button {
 
 .history li.settled .amt { color: var(--green); }
 
-.history li.open .amt { color: var(--ink-soft); font-weight: 500; }
+.history li.open .amt { color: var(--soft); font-weight: 500; }
 
-.history li.blank .amt { color: var(--ink-soft); font-weight: 500; opacity: 0.65; }
+.history li.blank .amt { color: var(--soft); font-weight: 500; opacity: 0.6; }
 
 .history .expr a {
   color: inherit;
   text-decoration: none;
-  border-bottom: 1px dashed var(--ink-soft);
+  border-bottom: 1px dashed var(--soft);
 }
 
 .history .expr a:hover {
@@ -554,7 +584,7 @@ button {
   margin-top: 10px;
   font-size: 14px;
   font-weight: 500;
-  color: var(--red);
+  color: var(--red-lift);
 }
 
 .archive-note a { color: inherit; }
@@ -572,13 +602,13 @@ button {
   display: inline-block;
   font-size: 14px;
   font-weight: 500;
-  color: var(--ink-soft);
-  border-bottom: 1px dashed var(--ink-soft);
+  color: var(--desk-soft);
+  border-bottom: 1px dashed var(--desk-soft);
 }
 
-.badges summary:hover { color: var(--ink); border-bottom-color: var(--ink); }
+.badges summary:hover { color: var(--paper); border-bottom-color: var(--paper); }
 
-.badge-count { color: var(--ink); }
+.badge-count { color: var(--paper); }
 
 #badgeList {
   list-style: none;
@@ -593,10 +623,10 @@ button {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: var(--sheet);
-  border: 1px solid var(--rule-strong);
-  border-radius: 3px;
+  background: var(--paper);
+  border-radius: 2px;
   padding: 10px 12px;
+  box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.45);
 }
 
 .badge .seal {
@@ -617,8 +647,8 @@ button {
 }
 
 .badge:not(.earned) .seal {
-  color: var(--ink-soft);
-  border: 1.5px dashed var(--ink-soft);
+  color: var(--soft);
+  border: 1.5px dashed var(--soft);
   opacity: 0.5;
   transform: none;
 }
@@ -631,19 +661,19 @@ button {
 .badge-name {
   display: block;
   font-family: var(--display);
-  font-weight: 600;
-  font-size: 16px;
+  font-weight: 700;
+  font-size: 15px;
   line-height: 1.25;
 }
 
 .badge-desc {
   display: block;
   font-size: 12.5px;
-  color: var(--ink-soft);
+  color: var(--soft);
   line-height: 1.35;
 }
 
-.badge.fresh { border-color: var(--red-faint); }
+.badge.fresh { box-shadow: 0 0 0 2px var(--red-faint), 0 6px 16px -8px rgba(0, 0, 0, 0.45); }
 
 .badge.fresh .seal { animation: seal-in 360ms cubic-bezier(0.2, 1.4, 0.4, 1); }
 
@@ -652,29 +682,31 @@ button {
   to   { transform: rotate(-6deg) scale(1); opacity: 0.9; }
 }
 
+/* ---------- ticker ---------- */
+
 .ticker {
   width: min(560px, 100%);
   display: flex;
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
-  margin-top: 28px;
+  margin-top: 32px;
   font-family: var(--mono);
   font-size: 12px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--ink-soft);
+  color: var(--desk-soft);
 }
 
 /* ---------- small screens ---------- */
 
 @media (max-width: 480px) {
-  body { padding: 20px 10px 40px; }
+  body { padding: 24px 10px 44px; }
 
-  .sheet { padding: 22px 18px 20px 46px; }
-  .sheet::before { left: 28px; }
+  .sheet { padding: 24px 18px 20px 48px; }
+  .sheet::before { left: 30px; }
 
-  .ledger li::before { left: -26px; font-size: 10px; }
+  .ledger li::before { left: -24px; font-size: 10px; }
 
   .tile { min-width: 56px; height: 48px; font-size: 20px; }
 }

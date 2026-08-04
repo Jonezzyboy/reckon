@@ -557,7 +557,7 @@ if (typeof document !== 'undefined') (function () {
 
   $('#share').addEventListener('click', () => {
     const n = state.moves.length;
-    let text = `Reckon No. ${day + 1} 🧾\nSettled${archive ? ' late' : ''} in ${n} line${n === 1 ? '' : 's'}.`;
+    let text = `🧾 Reckon No. ${day + 1} — settled${archive ? ' late' : ''} in ${n} line${n === 1 ? '' : 's'}`;
     const earned = loadBadges();
     const fresh = archive ? [] : BADGES.filter((b) => earned[b.id] === day).map((b) => b.name);
     if (fresh.length) text += `\n🏅 ${fresh.join(' · ')}`;
