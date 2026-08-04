@@ -403,6 +403,107 @@ button {
 
 .result button:active { transform: translateY(2px); box-shadow: none; }
 
+.new-badges {
+  margin-top: 8px;
+  font-style: italic;
+  font-size: 16px;
+  color: var(--red);
+}
+
+/* ---------- commendations ---------- */
+
+.badges {
+  width: min(560px, 100%);
+  margin-top: 24px;
+}
+
+.badges summary {
+  cursor: pointer;
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  border-bottom: 1px dashed var(--ink-soft);
+}
+
+.badges summary:hover { color: var(--ink); border-bottom-color: var(--ink); }
+
+.badge-count { color: var(--ink); }
+
+#badgeList {
+  list-style: none;
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--sheet);
+  border: 1px solid var(--rule-strong);
+  border-radius: 3px;
+  padding: 10px 12px;
+}
+
+.badge .seal {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--red);
+  border: 3px double var(--red);
+  border-radius: 50%;
+  transform: rotate(-6deg);
+  opacity: 0.9;
+}
+
+.badge:not(.earned) .seal {
+  color: var(--ink-soft);
+  border: 1.5px dashed var(--ink-soft);
+  opacity: 0.5;
+  transform: none;
+}
+
+.badge:not(.earned) .badge-name,
+.badge:not(.earned) .badge-desc {
+  opacity: 0.55;
+}
+
+.badge-name {
+  display: block;
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.badge-desc {
+  display: block;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  line-height: 1.35;
+}
+
+.badge.fresh { border-color: var(--red-faint); }
+
+.badge.fresh .seal { animation: seal-in 360ms cubic-bezier(0.2, 1.4, 0.4, 1); }
+
+@keyframes seal-in {
+  from { transform: rotate(-6deg) scale(1.9); opacity: 0; }
+  to   { transform: rotate(-6deg) scale(1); opacity: 0.9; }
+}
+
 .ticker {
   width: min(560px, 100%);
   display: flex;

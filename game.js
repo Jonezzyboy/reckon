@@ -108,8 +108,41 @@ function msToMidnight() {
   return new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1) - now;
 }
 
+/* ============================================================
+   Commendations
+   Earnable badges, judged against a summary of a winning day:
+   { wins, streak, lines, spentAll, opsUsed, revised }.
+   ============================================================ */
+
+const BADGES = [
+  { id: 'opening-entry', seal: 'No1', name: 'Opening Entry',
+    desc: 'Settle your first account.',
+    test: (c) => c.wins >= 1 },
+  { id: 'every-penny', seal: '6/6', name: 'Every Penny',
+    desc: 'Spend all six figures settling one account.',
+    test: (c) => c.spentAll },
+  { id: 'compound-entry', seal: '×÷', name: 'Compound Entry',
+    desc: 'Use all four operations in one settlement.',
+    test: (c) => c.opsUsed >= 4 },
+  { id: 'fair-copy', seal: 'FC', name: 'Fair Copy',
+    desc: 'Settle without undoing or starting over.',
+    test: (c) => !c.revised },
+  { id: 'prompt-payment', seal: '≤3', name: 'Prompt Payment',
+    desc: 'Settle in three lines or fewer.',
+    test: (c) => c.lines <= 3 },
+  { id: 'repeat-business', seal: '3d', name: 'Repeat Business',
+    desc: 'Settle three days running.',
+    test: (c) => c.streak >= 3 },
+  { id: 'in-the-black', seal: '7d', name: 'In the Black',
+    desc: 'Settle seven days running.',
+    test: (c) => c.streak >= 7 },
+  { id: 'iron-ledger', seal: '30', name: 'Iron Ledger',
+    desc: 'Settle thirty days running.',
+    test: (c) => c.streak >= 30 },
+];
+
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { generatePuzzle, buildSolution, candidateOps, mulberry32 };
+  module.exports = { generatePuzzle, buildSolution, candidateOps, mulberry32, BADGES };
 }
 
 /* ============================================================
@@ -121,6 +154,7 @@ if (typeof document !== 'undefined') (function () {
 
   const DAY_KEY = 'reckon-day-v1';
   const STATS_KEY = 'reckon-stats-v1';
+  const BADGES_KEY = 'reckon-badges-v1';
 
   const day = todayIndex();
   const puzzle = generatePuzzle(day);
@@ -131,6 +165,7 @@ if (typeof document !== 'undefined') (function () {
     sel: { aId: null, op: null },
     solved: false,
     gaveUp: false,
+    revised: false,
   };
 
   const tile = (id) => state.tiles.find((t) => t.id === id);
@@ -148,6 +183,7 @@ if (typeof document !== 'undefined') (function () {
       moves: state.moves.map((m) => [m.aId, m.op, m.bId]),
       solved: state.solved,
       gaveUp: state.gaveUp,
+      revised: state.revised,
     }));
   }
 
@@ -178,6 +214,32 @@ if (typeof document !== 'undefined') (function () {
     saveStats(stats);
   }
 
+  function loadBadges() {
+    return loadJSON(BADGES_KEY) || {};
+  }
+
+  // Awarded only on a win; idempotent, so replaying a saved win is safe.
+  function awardBadges() {
+    const stats = loadStats();
+    const ctx = {
+      wins: stats.wins,
+      streak: stats.streak,
+      lines: state.moves.length,
+      spentAll: state.tiles.filter((t) => !t.made).every((t) => t.used),
+      opsUsed: new Set(state.moves.map((m) => m.op)).size,
+      revised: state.revised,
+    };
+    const earned = loadBadges();
+    let changed = false;
+    for (const b of BADGES) {
+      if (!(b.id in earned) && b.test(ctx)) {
+        earned[b.id] = day;
+        changed = true;
+      }
+    }
+    if (changed) localStorage.setItem(BADGES_KEY, JSON.stringify(earned));
+  }
+
   /* ---------- moves ---------- */
 
   function attempt(aId, op, bId) {
@@ -202,6 +264,7 @@ if (typeof document !== 'undefined') (function () {
     tile(m.aId).used = false;
     tile(m.bId).used = false;
     state.sel = { aId: null, op: null };
+    state.revised = true;
     saveDay();
     renderAll();
   }
@@ -212,6 +275,7 @@ if (typeof document !== 'undefined') (function () {
     state.tiles.forEach((t) => { t.used = false; });
     state.moves = [];
     state.sel = { aId: null, op: null };
+    state.revised = true;
     saveDay();
     renderAll();
   }
@@ -220,6 +284,7 @@ if (typeof document !== 'undefined') (function () {
     state.solved = true;
     state.sel = { aId: null, op: null };
     recordResult(true);
+    awardBadges();
     const stamp = $('#stamp');
     stamp.hidden = false;
     if (!animate) stamp.style.animation = 'none';
@@ -370,7 +435,40 @@ if (typeof document !== 'undefined') (function () {
     $('#resultText').textContent = state.solved
       ? `Account settled in ${n} line${n === 1 ? '' : 's'}.`
       : 'The books stay open today. Tomorrow brings a fresh account.';
+    const earned = loadBadges();
+    const fresh = BADGES.filter((b) => earned[b.id] === day);
+    const nb = $('#newBadges');
+    nb.hidden = fresh.length === 0;
+    nb.textContent = fresh.length
+      ? `New commendation${fresh.length === 1 ? '' : 's'}: ${fresh.map((b) => b.name).join(' · ')}`
+      : '';
     $('#share').hidden = !state.solved;
+  }
+
+  function renderBadges() {
+    const earned = loadBadges();
+    $('#badgeCount').textContent = `${Object.keys(earned).length} of ${BADGES.length}`;
+    const ul = $('#badgeList');
+    ul.innerHTML = '';
+    for (const b of BADGES) {
+      const got = b.id in earned;
+      const li = document.createElement('li');
+      li.className = 'badge' + (got ? ' earned' : '') + (earned[b.id] === day ? ' fresh' : '');
+      const seal = document.createElement('span');
+      seal.className = 'seal';
+      seal.textContent = b.seal;
+      const name = document.createElement('span');
+      name.className = 'badge-name';
+      name.textContent = b.name;
+      const desc = document.createElement('span');
+      desc.className = 'badge-desc';
+      desc.textContent = got ? `${b.desc} Earned No. ${earned[b.id] + 1}.` : b.desc;
+      const text = document.createElement('span');
+      text.className = 'badge-text';
+      text.append(name, desc);
+      li.append(seal, text);
+      ul.appendChild(li);
+    }
   }
 
   function renderStats() {
@@ -385,13 +483,17 @@ if (typeof document !== 'undefined') (function () {
     renderControls();
     renderResult();
     renderStats();
+    renderBadges();
   }
 
   /* ---------- share & clock ---------- */
 
   $('#share').addEventListener('click', () => {
     const n = state.moves.length;
-    const text = `Reckon No. ${day + 1} 🧾\nSettled in ${n} line${n === 1 ? '' : 's'}.`;
+    let text = `Reckon No. ${day + 1} 🧾\nSettled in ${n} line${n === 1 ? '' : 's'}.`;
+    const earned = loadBadges();
+    const fresh = BADGES.filter((b) => earned[b.id] === day).map((b) => b.name);
+    if (fresh.length) text += `\n🏅 ${fresh.join(' · ')}`;
     navigator.clipboard.writeText(text).then(() => {
       $('#share').textContent = 'Copied';
       setTimeout(() => { $('#share').textContent = 'Copy result'; }, 2000);
@@ -431,6 +533,7 @@ if (typeof document !== 'undefined') (function () {
 
   const saved = loadJSON(DAY_KEY);
   if (saved && saved.day === day) {
+    if (saved.revised) state.revised = true;
     for (const [aId, op, bId] of saved.moves) {
       const a = tile(aId), b = tile(bId);
       if (!a || !b || a.used || b.used) break;

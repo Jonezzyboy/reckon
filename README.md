@@ -15,8 +15,17 @@ It's listed alongside everything else on the homepage,
   in as a new figure you can spend.
 - Each figure may be spent once. Subtraction must stay positive and division
   must come out even — the ledger holds only positive whole numbers.
-- A fresh account opens at local midnight. Streaks and results are kept in
-  `localStorage`.
+- A fresh account opens at local midnight. Streaks, results and commendations
+  are kept in `localStorage`.
+
+## Commendations
+
+Badges earned by settling accounts in style — spend all six figures
+(*Every Penny*), use all four operations (*Compound Entry*), settle with no
+undo (*Fair Copy*), finish in three lines (*Prompt Payment*), or keep a streak
+going (*Repeat Business*, *In the Black*, *Iron Ledger*). The full cabinet
+lives under **Commendations** below the sheet, and new ones are stamped into
+your shareable result.
 
 ## The daily puzzle
 
@@ -44,9 +53,9 @@ then visit <http://localhost:8000>.
 ## Tests
 
 ```sh
-node test/generator.test.js
+npm test
 ```
 
 Replays the generator across several years of days and verifies each puzzle's
 shape, target range, and that the recorded solution really reaches the target
-under the game's rules.
+under the game's rules, then checks every commendation's earning conditions.

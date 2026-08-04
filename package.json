@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "start": "serve -l 8000 .",
-    "test": "node test/generator.test.js"
+    "test": "node test/generator.test.js && node test/badges.test.js"
   },
   "devDependencies": {
     "serve": "^14.2.4"
