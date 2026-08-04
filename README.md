@@ -24,8 +24,9 @@ House rules:
   holds only positive whole numbers.
 - A fresh account opens at local midnight. Streaks, results and commendations
   are kept in `localStorage`.
-- **Stationery** (in the footer) cycles the look: *Counting house* (default),
-  *Sage ledger* (light) and *Nightwatch* (dark). The choice is remembered.
+- **Stationery** (in the footer) picks the look: *Counting house* (default),
+  *Sage ledger*, *Manila*, *Banker's blue*, *Oxblood* and *Nightwatch* (dark).
+  The choice is remembered.
 - **Past accounts** (below the sheet) lists every previous day — the puzzle
   number, its date, and whether the account was settled and in how many lines.
   Each entry links to that day's puzzle (also reachable at `?no=N`), reopened

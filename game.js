@@ -571,26 +571,74 @@ if (typeof document !== 'undefined') (function () {
 
   const THEME_KEY = 'reckon-theme-v1';
   const THEMES = [
-    { id: '', name: 'Counting house' },
-    { id: 'sage', name: 'Sage ledger' },
-    { id: 'nightwatch', name: 'Nightwatch' },
+    { id: '', name: 'Counting house', desk: '#31443a', paper: '#f9f5e8' },
+    { id: 'sage', name: 'Sage ledger', desk: '#e9efdd', paper: '#f6f8ec' },
+    { id: 'manila', name: 'Manila', desk: '#dfd3b4', paper: '#f8f4e6' },
+    { id: 'bankers-blue', name: "Banker's blue", desk: '#1d2c40', paper: '#f7f3e6' },
+    { id: 'oxblood', name: 'Oxblood', desk: '#3f2226', paper: '#f8f2e4' },
+    { id: 'nightwatch', name: 'Nightwatch', desk: '#10171a', paper: '#1e2622' },
   ];
 
   let themeId = localStorage.getItem(THEME_KEY) || '';
   if (!THEMES.some((t) => t.id === themeId)) themeId = '';
 
+  const themeBtn = $('#theme');
+  const themeMenu = $('#themeMenu');
+
+  function themeChip(t) {
+    const chip = document.createElement('span');
+    chip.className = 'chip';
+    chip.style.background = `linear-gradient(135deg, ${t.desk} 0 62%, ${t.paper} 62%)`;
+    return chip;
+  }
+
   function applyTheme() {
     if (themeId) document.documentElement.dataset.theme = themeId;
     else delete document.documentElement.dataset.theme;
-    $('#theme').textContent =
-      `Stationery: ${THEMES.find((t) => t.id === themeId).name}`;
+    const t = THEMES.find((x) => x.id === themeId);
+    themeBtn.innerHTML = '';
+    themeBtn.append(themeChip(t), document.createTextNode(t.name));
   }
 
-  $('#theme').addEventListener('click', () => {
-    const i = THEMES.findIndex((t) => t.id === themeId);
-    themeId = THEMES[(i + 1) % THEMES.length].id;
-    localStorage.setItem(THEME_KEY, themeId);
-    applyTheme();
+  function closeThemeMenu() {
+    themeMenu.hidden = true;
+    themeBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  function renderThemeMenu() {
+    themeMenu.innerHTML = '';
+    for (const t of THEMES) {
+      const b = document.createElement('button');
+      b.setAttribute('role', 'option');
+      b.setAttribute('aria-selected', String(t.id === themeId));
+      if (t.id === themeId) b.classList.add('selected');
+      const name = document.createElement('span');
+      name.textContent = t.name;
+      b.append(themeChip(t), name);
+      b.addEventListener('click', () => {
+        themeId = t.id;
+        localStorage.setItem(THEME_KEY, themeId);
+        applyTheme();
+        closeThemeMenu();
+      });
+      themeMenu.appendChild(b);
+    }
+  }
+
+  themeBtn.addEventListener('click', () => {
+    if (themeMenu.hidden) {
+      renderThemeMenu();
+      themeMenu.hidden = false;
+      themeBtn.setAttribute('aria-expanded', 'true');
+    } else {
+      closeThemeMenu();
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!themeMenu.hidden && !themeMenu.contains(e.target) && !themeBtn.contains(e.target)) {
+      closeThemeMenu();
+    }
   });
 
   applyTheme();
@@ -622,7 +670,7 @@ if (typeof document !== 'undefined') (function () {
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Backspace') { e.preventDefault(); undo(); }
-    else if (e.key === 'Escape') { state.sel = { aId: null, op: null }; renderAll(); }
+    else if (e.key === 'Escape') { closeThemeMenu(); state.sel = { aId: null, op: null }; renderAll(); }
     else if (e.key === '+' ) onOp('+');
     else if (e.key === '-') onOp('-');
     else if (e.key === '*' || e.key.toLowerCase() === 'x') onOp('*');
