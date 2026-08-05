@@ -150,8 +150,56 @@ const BADGES = [
     test: (c) => c.wins >= 100 },
 ];
 
+/* ============================================================
+   Optimal solver
+   Iterative-deepening search for the shortest working that
+   settles the account under the ledger rules. Small enough to
+   run exhaustively: six figures, at most five lines.
+   ============================================================ */
+
+function solveOptimal(numbers, target, maxSteps) {
+  const limit = maxSteps == null ? numbers.length - 1 : maxSteps;
+
+  // seen maps a pool (sorted multiset) to the deepest remaining
+  // depth it has already been searched at without success.
+  function search(pool, depth, steps, seen) {
+    const key = pool.slice().sort((x, y) => x - y).join(',');
+    if ((seen.get(key) || 0) >= depth) return false;
+    seen.set(key, depth);
+    for (let i = 0; i < pool.length; i++) {
+      for (let j = 0; j < pool.length; j++) {
+        if (i === j) continue;
+        const a = pool[i], b = pool[j];
+        if (a < b) continue;
+        for (const op of ['+', '-', '*', '/']) {
+          if (op === '-' && a - b <= 0) continue;
+          if (op === '/' && a % b !== 0) continue;
+          // ×1 and ÷1 reproduce a — never part of a shortest working.
+          if ((op === '*' || op === '/') && b === 1) continue;
+          const result = applyOp(a, op, b);
+          steps.push({ a, op, b, result });
+          if (result === target) return true;
+          if (depth > 1) {
+            const rest = pool.filter((_, k) => k !== i && k !== j);
+            rest.push(result);
+            if (search(rest, depth - 1, steps, seen)) return true;
+          }
+          steps.pop();
+        }
+      }
+    }
+    return false;
+  }
+
+  for (let depth = 1; depth <= limit; depth++) {
+    const steps = [];
+    if (search(numbers.slice(), depth, steps, new Map())) return steps;
+  }
+  return null;
+}
+
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { generatePuzzle, buildSolution, candidateOps, mulberry32, BADGES };
+  module.exports = { generatePuzzle, buildSolution, candidateOps, solveOptimal, mulberry32, BADGES };
 }
 
 /* ============================================================
@@ -172,6 +220,16 @@ if (typeof document !== 'undefined') (function () {
   const archive = Number.isInteger(requested) && requested >= 0 && requested < today;
   const day = archive ? requested : today;
   const puzzle = generatePuzzle(day);
+
+  // Computed once, on first finish; the generator chain bounds the search.
+  let bestSteps = null;
+  function optimal() {
+    if (!bestSteps) {
+      bestSteps = solveOptimal(puzzle.numbers, puzzle.target, puzzle.solution.length)
+        || puzzle.solution;
+    }
+    return bestSteps;
+  }
 
   const state = {
     tiles: puzzle.numbers.map((v, i) => ({ id: i, value: v, used: false, made: false })),
@@ -496,10 +554,15 @@ if (typeof document !== 'undefined') (function () {
       ol.appendChild(ledgerLine('Your working goes here.', null, 'empty'));
     }
 
-    if (state.gaveUp) {
-      ol.appendChild(ledgerLine("Auditor's working:", null, 'audit-label'));
-      for (const s of puzzle.solution) {
-        ol.appendChild(ledgerLine(`${s.a} ${OP_SYMBOL[s.op]} ${s.b}`, s.result, 'audit'));
+    if (finished()) {
+      const best = optimal();
+      if (state.solved && state.moves.length <= best.length) {
+        ol.appendChild(ledgerLine("Auditor's note — no shorter working exists.", null, 'audit-label'));
+      } else {
+        ol.appendChild(ledgerLine(`Auditor's working — ${best.length} line${best.length === 1 ? '' : 's'}:`, null, 'audit-label'));
+        for (const s of best) {
+          ol.appendChild(ledgerLine(`${s.a} ${OP_SYMBOL[s.op]} ${s.b}`, s.result, 'audit'));
+        }
       }
     }
   }
@@ -515,8 +578,10 @@ if (typeof document !== 'undefined') (function () {
     box.hidden = !finished();
     if (!finished()) return;
     const n = state.moves.length;
+    const m = optimal().length;
     $('#resultText').textContent = state.solved
-      ? `Account settled${archive ? ' late' : ''} in ${n} line${n === 1 ? '' : 's'}.`
+      ? `Account settled${archive ? ' late' : ''} in ${n} line${n === 1 ? '' : 's'}`
+        + (n <= m ? ' — the fewest possible.' : `. The auditor managed it in ${m}.`)
       : archive
         ? 'This past account stays open.'
         : 'The books stay open today. Tomorrow brings a fresh account.';
@@ -652,20 +717,59 @@ if (typeof document !== 'undefined') (function () {
 
   const OP_EMOJI = { '+': '➕', '-': '➖', '*': '✖️', '/': '➗' };
 
-  $('#share').addEventListener('click', () => {
+  // Plain punctuation only — em dashes and middle dots garble in some
+  // messaging apps, so the shared text sticks to ASCII plus emoji.
+  function shareText() {
     const n = state.moves.length;
-    let text = `🧾 Reckon No. ${day + 1} — settled${archive ? ' late' : ''} in ${n} line${n === 1 ? '' : 's'}`;
-    text += `\n${state.moves.map((m) => OP_EMOJI[m.op]).join('')}`;
+    const lines = [`🧾 Reckon No. ${day + 1}`];
+    lines.push(`Settled${archive ? ' late' : ''} in ${n} line${n === 1 ? '' : 's'}`
+      + (n <= optimal().length ? ' (the fewest possible)' : ''));
+    lines.push(state.moves.map((m) => OP_EMOJI[m.op]).join(''));
     const s = loadStats();
-    if (!archive && s.streak > 1) text += `\n📈 ${s.streak} days running`;
+    if (!archive && s.streak > 1) lines.push(`📈 ${s.streak} days running`);
     const earned = loadBadges();
     const fresh = archive ? [] : BADGES.filter((b) => earned[b.id] === day).map((b) => b.name);
-    if (fresh.length) text += `\n🏅 ${fresh.join(' · ')}`;
-    text += '\nhttps://jonezzyboy.github.io/reckon/';
-    navigator.clipboard.writeText(text).then(() => {
-      $('#share').textContent = 'Copied';
-      setTimeout(() => { $('#share').textContent = 'Copy result'; }, 2000);
-    });
+    if (fresh.length) lines.push(`🏅 ${fresh.join(', ')}`);
+    lines.push('', 'https://jonezzyboy.github.io/reckon/');
+    return lines.join('\n');
+  }
+
+  const shareBtn = $('#share');
+  const canShare = typeof navigator.share === 'function';
+  const shareLabel = canShare ? 'Share result' : 'Copy result';
+  shareBtn.textContent = shareLabel;
+
+  function flashShare(msg) {
+    shareBtn.textContent = msg;
+    setTimeout(() => { shareBtn.textContent = shareLabel; }, 2000);
+  }
+
+  function copyFallback(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch { /* fall through */ }
+    ta.remove();
+    return ok;
+  }
+
+  shareBtn.addEventListener('click', async () => {
+    const text = shareText();
+    if (canShare) {
+      try { await navigator.share({ text }); return; }
+      catch (e) { if (e.name === 'AbortError') return; }
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      flashShare('Copied');
+    } catch {
+      flashShare(copyFallback(text) ? 'Copied' : 'Copy failed');
+    }
   });
 
   /* ---------- stationery ---------- */

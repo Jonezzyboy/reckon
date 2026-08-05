@@ -17,6 +17,10 @@ You're handed six figures and an **amount due**. Settle the account exactly.
    `75 × 4 = 300`.
 3. Hit the amount due exactly to earn the red **SETTLED** stamp.
 
+Once the account is closed — settled or given up — the auditor weighs in:
+if a shorter working exists, it's written up below yours, and a settlement
+in the fewest possible lines is called out (in the shareable result too).
+
 House rules:
 
 - Each figure may be spent only once — results included.
@@ -24,6 +28,9 @@ House rules:
   holds only positive whole numbers.
 - A fresh account opens at local midnight. Streaks, results and commendations
   are kept in `localStorage`.
+- **Share result** opens the device share sheet where the browser supports it
+  (straight into WhatsApp and the like); elsewhere the button copies plain,
+  paste-anywhere text to the clipboard.
 - **Stationery** (in the footer) picks the look: *Counting house* (default),
   *Sage ledger*, *Manila*, *Banker's blue*, *Oxblood* and *Nightwatch* (dark).
   The choice is remembered.
@@ -56,8 +63,9 @@ the same account on the same day, with no server and no answer list:
 2. A seeded PRNG ([mulberry32](https://gist.github.com/tommyettinger/46a874533244883189143505d203312c))
    picks 1–2 "big" numbers (25/50/75/100) and fills the rest from 1–10.
 3. The target is built by actually chaining 3–5 operations over those numbers
-   under the ledger rules, so **every puzzle is guaranteed solvable** — and the
-   generating chain doubles as the revealed solution if you give up.
+   under the ledger rules, so **every puzzle is guaranteed solvable**. An
+   exhaustive iterative-deepening solver then finds the *shortest* working,
+   which is what the auditor reveals once the account is closed.
 4. Targets land between 101 and 999 and never match a starting number.
 
 ## Running it
@@ -78,4 +86,6 @@ npm test
 
 Replays the generator across several years of days and verifies each puzzle's
 shape, target range, and that the recorded solution really reaches the target
-under the game's rules, then checks every commendation's earning conditions.
+under the game's rules; runs the optimal solver over a year of puzzles and
+checks each answer is legal, reaches the target, and that nothing shorter
+exists; then checks every commendation's earning conditions.
