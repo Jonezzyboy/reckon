@@ -940,6 +940,17 @@ button {
   color: var(--on-desk-soft);
 }
 
+.also {
+  width: min(560px, 100%);
+  margin-top: 14px;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--on-desk-soft);
+}
+
+.also a { color: var(--on-desk); }
+
 .stationery { position: relative; }
 
 .theme-toggle {
