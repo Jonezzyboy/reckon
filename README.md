@@ -66,7 +66,9 @@ the same account on the same day, with no server and no answer list:
    under the ledger rules, so **every puzzle is guaranteed solvable**. An
    exhaustive iterative-deepening solver then finds the *shortest* working,
    which is what the auditor reveals once the account is closed.
-4. Targets land between 101 and 999 and never match a starting number.
+4. Targets land between 101 and 999, never match a starting number, and
+   never fall to a single line — accounts that could be settled in one
+   operation are rejected as too easy.
 
 ## Running it
 

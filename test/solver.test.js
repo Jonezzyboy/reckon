@@ -69,6 +69,7 @@ for (let day = 0; day < DAYS; day++) {
   if (best.length > p.solution.length) fail(day, 'solver worse than generator chain', { best, p });
   const err = verifySteps(p.numbers, best, p.target);
   if (err) fail(day, err, best);
+  if (best.length === 1) fail(day, 'puzzle is settleable in a single line', p);
   // Iterative deepening guarantees minimality; spot-check the claim.
   if (solveOptimal(p.numbers, p.target, best.length - 1)) {
     fail(day, 'shorter solution exists than the one returned', best);

@@ -88,6 +88,7 @@ function generatePuzzle(dayIndex) {
     if (!sol) continue;
     if (sol.target < 101 || sol.target > 999) continue;
     if (numbers.includes(sol.target)) continue;
+    if (solveOptimal(numbers, sol.target, 1)) continue;
     return { numbers, target: sol.target, solution: sol.steps };
   }
   throw new Error('No puzzle could be generated for day ' + dayIndex);
